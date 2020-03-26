@@ -1,13 +1,7 @@
-#
-# gcsfuse : Google cloud storage, as a mounted volume!
-#
-# VERSION                   1.0.0
-#
-# Build the actual container
-#
 FROM alpine:3.10
+MAINTAINER Alexandro Scarnicchia <alexandro.scarnicchia@botika.ai>
 
-# ArangoDB installation
+# ArabgoDb v3.6.2
 
 ENV ARANGO_VERSION 3.6.2
 ENV ARANGO_URL https://download.arangodb.com/arangodb36/DEBIAN/amd64
@@ -46,17 +40,14 @@ RUN apk add --no-cache gnupg pwgen nodejs npm binutils numactl numactl-tools && 
 # retain the database directory and the Foxx Application directory
 VOLUME ["/var/lib/arangodb3", "/var/lib/arangodb3-apps"]
 
+COPY entrypoint_db.sh /entrypoint_db.sh
 COPY foxx.sh /usr/bin/foxx
 
+# Launch Entrypoint Scripts
 
-COPY entrypoint.sh /entrypoint.sh
-RUN	chmod +x entrypoint.sh
-
-
-# Chain up the entrypoints
-ENTRYPOINT [ "/entrypoint.sh" ] 
+#ENTRYPOINT ["/entrypoint_db.sh","/entrypoint_gs.sh"]
+ENTRYPOINT ["/entrypoint_db.sh"]
 
 # Arango Standard Port
 EXPOSE 8529
 CMD ["arangod"]
-
